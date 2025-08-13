@@ -11,6 +11,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ReshmaBilling</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -206,6 +207,44 @@
                         <div x-show="currentRoute('order.history')" class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
                     </div>
                     <span :class="{ 'lg:hidden': !isSidebarOpen, 'font-medium': true }" class="transition-all duration-300">Order History</span>
+                </a>
+            </li>
+
+            <!-- Transports -->
+            <li>
+                <a
+                    href="{{ route('transports.index') }}"
+                    class="flex items-center p-3 space-x-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-violet-50 dark:hover:from-purple-900/20 dark:hover:to-violet-900/20 transition-all duration-300 group"
+                    :class="{'justify-center': !isSidebarOpen, 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg': currentRoute('transports.index')}"
+                >
+                    <div class="relative">
+                        <svg class="w-6 h-6 transition-all duration-300"
+                            :class="{'text-gray-500 group-hover:text-purple-600 dark:text-gray-400 dark:group-hover:text-purple-400': !currentRoute('transports.index'), 'text-white': currentRoute('transports.index')}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        <div x-show="currentRoute('transports.index')" class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                    </div>
+                    <span :class="{ 'lg:hidden': !isSidebarOpen, 'font-medium': true }" class="transition-all duration-300">Transports</span>
+                </a>
+            </li>
+
+            <!-- Bank Details -->
+            <li>
+                <a
+                    href="{{ route('bank-details.index') }}"
+                    class="flex items-center p-3 space-x-3 rounded-xl hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 dark:hover:from-emerald-900/20 dark:hover:to-green-900/20 transition-all duration-300 group"
+                    :class="{'justify-center': !isSidebarOpen, 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg': currentRoute('bank-details.index')}"
+                >
+                    <div class="relative">
+                        <svg class="w-6 h-6 transition-all duration-300"
+                            :class="{'text-gray-500 group-hover:text-emerald-600 dark:text-gray-400 dark:group-hover:text-emerald-400': !currentRoute('bank-details.index'), 'text-white': currentRoute('bank-details.index')}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <div x-show="currentRoute('bank-details.index')" class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                    </div>
+                    <span :class="{ 'lg:hidden': !isSidebarOpen, 'font-medium': true }" class="transition-all duration-300">Bank Details</span>
                 </a>
             </li>
 

@@ -37,6 +37,21 @@ public function addProduct(Request $request)
 
     return redirect()->route('all.products')->with('success', 'Product added successfully!');
 }
+
+    public function deleteProduct($id)
+    {
+        $product = Product::find($id);
+        if (!$product) {
+            return redirect()->route('all.products')->with('error', 'Product not found!');
+        }
+        // Delete product image if exists
+        if ($product->product_image && \Storage::disk('public')->exists($product->product_image)) {
+            \Storage::disk('public')->delete($product->product_image);
+        }
+        $product->delete();
+        return redirect()->route('all.products')->with('success', 'Product deleted successfully!');
+    }
+
     public function allProducts()
     {
         $categories = Category::all();

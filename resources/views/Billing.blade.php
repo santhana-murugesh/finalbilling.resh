@@ -72,6 +72,12 @@
                                 </svg>
                                 <span>Customer</span>
                             </button>
+                            <button @click="showTransportModal = true" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-300 flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                                <span>Transport</span>
+                            </button>
                             <button @click="applyDiscount" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-300 flex items-center space-x-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
@@ -254,9 +260,17 @@
                         </div>
                         
                         <!-- Tax -->
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 dark:text-gray-300 transition-colors duration-300">Tax (<span x-text="settings ? settings.tax_rate : 18"></span>% GST):</span>
-                            <span class="font-medium text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="taxAmount.toFixed(2)"></span></span>
+                        <div class="flex justify-between text-sm" x-show="selectedCustomer && selectedCustomer.state !== 'Tamil Nadu'">
+                            <span class="text-gray-600 dark:text-gray-300 transition-colors duration-300">IGST (<span x-text="settings ? settings.tax_rate : 18"></span>%):</span>
+                            <span class="font-medium text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="igstAmount.toFixed(2)"></span></span>
+                        </div>
+                        <div class="flex justify-between text-sm" x-show="selectedCustomer && selectedCustomer.state === 'Tamil Nadu'">
+                            <span class="text-gray-600 dark:text-gray-300 transition-colors duration-300">CGST (<span x-text="(settings ? settings.tax_rate : 18) / 2"></span>%):</span>
+                            <span class="font-medium text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="cgstAmount.toFixed(2)"></span></span>
+                        </div>
+                        <div class="flex justify-between text-sm" x-show="selectedCustomer && selectedCustomer.state === 'Tamil Nadu'">
+                            <span class="text-gray-600 dark:text-gray-300 transition-colors duration-300">SGST (<span x-text="(settings ? settings.tax_rate : 18) / 2"></span>%):</span>
+                            <span class="font-medium text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="sgstAmount.toFixed(2)"></span></span>
                         </div>
                         
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-3 transition-colors duration-300">
@@ -300,12 +314,63 @@
             <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Customer Information</h3>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Customer Name</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Customer Name *</label>
                     <input type="text" x-model="customerForm.name" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Phone Number</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Mobile Number *</label>
                     <input type="tel" x-model="customerForm.phone" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">GST Number</label>
+                    <input type="text" x-model="customerForm.gst_number" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Aadhar Number (Optional)</label>
+                    <input type="text" x-model="customerForm.aadhar_number" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">State</label>
+                    <select x-model="customerForm.state" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
+                        <option value="">Select State</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Dadra and Nagar Haveli">Dadra and Nagar Haveli</option>
+                        <option value="Daman and Diu">Daman and Diu</option>
+                        <option value="Lakshadweep">Lakshadweep</option>
+                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                        <option value="Ladakh">Ladakh</option>
+                        <option value="Puducherry">Puducherry</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Email (Optional)</label>
@@ -349,6 +414,42 @@
         </div>
     </div>
 
+    <!-- Transport Modal -->
+    <div x-show="showTransportModal" 
+         x-transition 
+         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+         @click.outside="showTransportModal = false">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6 transition-colors duration-300">
+            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Select Transport</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">Transport Company</label>
+                    <select x-model="selectedTransportId" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300">
+                        <option value="">Select Transport</option>
+                        <template x-for="transport in transports" :key="transport.id">
+                            <option :value="transport.id" x-text="transport.name"></option>
+                        </template>
+                    </select>
+                </div>
+                <div x-show="selectedTransportId">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                        <div class="text-sm text-gray-600 dark:text-gray-300">
+                            <p><strong>Name:</strong> <span x-text="transports.find(t => t.id == selectedTransportId)?.name || 'Not found'"></span></p>
+                            <p x-show="transports.find(t => t.id == selectedTransportId)?.phone"><strong>Phone:</strong> <span x-text="transports.find(t => t.id == selectedTransportId)?.phone"></span></p>
+                            <p x-show="transports.find(t => t.id == selectedTransportId)?.email"><strong>Email:</strong> <span x-text="transports.find(t => t.id == selectedTransportId)?.email"></span></p>
+                            <p x-show="transports.find(t => t.id == selectedTransportId)?.vehicle_number"><strong>Vehicle:</strong> <span x-text="transports.find(t => t.id == selectedTransportId)?.vehicle_number"></span></p>
+                            <p x-show="transports.find(t => t.id == selectedTransportId)?.address"><strong>Address:</strong> <span x-text="transports.find(t => t.id == selectedTransportId)?.address"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button @click="showTransportModal = false" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-300">Cancel</button>
+                <button @click="saveTransport" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">Select Transport</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bill Preview Modal -->
     <div x-show="showModal" 
          x-transition 
@@ -372,9 +473,7 @@
                     <div class="text-2xl font-bold text-gray-900 dark:text-white mb-1 transition-colors duration-300" x-text="settings ? settings.company_name : 'Reshma Crackers'"></div>
                     <div class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300" x-text="settings ? settings.company_address : '302/3B NARANAPURAM PUDHUR, SIVAKASI 626189'"></div>
                     <div class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
-                        <span x-text="settings ? 'Phone: ' + settings.company_phone : 'Phone: +91 8248384330'"></span>
-                        <span x-show="settings && settings.company_email"> | </span>
-                        <span x-text="settings ? settings.company_email : 'Email: info@reshmabilling.com'"></span>
+                        <span x-text="settings ? 'Exp Lic No :01/2021' : 'Exp Lic No :01/2021'"></span>
                     </div>
                     <div x-show="settings && settings.gst_number" class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300" x-text="'GST: ' + settings.gst_number"></div>
                 </div>
@@ -387,12 +486,24 @@
                         <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.customer ? orderPreview.customer.phone : ''"></div>
                         <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.customer ? orderPreview.customer.address : ''"></div>
                         <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.customer ? orderPreview.customer.email : ''"></div>
+                        <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.customer && orderPreview.customer.gst_number ? 'GST: ' + orderPreview.customer.gst_number : ''"></div>
+                        <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.customer && orderPreview.customer.aadhar_number ? 'Aadhar: ' + orderPreview.customer.aadhar_number : ''"></div>
+                        <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.customer && orderPreview.customer.state ? 'State: ' + orderPreview.customer.state : ''"></div>
                     </div>
                     <div class="text-right">
                         <div class="text-gray-900 dark:text-white transition-colors duration-300"><strong>Bill No:</strong> <span x-text="orderPreview.number"></span></div>
                         <div class="text-gray-900 dark:text-white transition-colors duration-300"><strong>Date:</strong> {{ now()->format('d-m-Y') }}</div>
                         <div class="text-gray-900 dark:text-white transition-colors duration-300"><strong>Time:</strong> {{ now()->format('h:i A') }}</div>
                     </div>
+                </div>
+
+                <!-- Transport Details -->
+                <div x-show="orderPreview.transport" class="mb-4 text-sm">
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300"><strong>Transport:</strong></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.transport ? orderPreview.transport.name : 'No name'"></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.transport ? orderPreview.transport.phone : ''"></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.transport && orderPreview.transport.vehicle_number ? 'Vehicle: ' + orderPreview.transport.vehicle_number : ''"></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="orderPreview.transport ? orderPreview.transport.address : ''"></div>
                 </div>
 
                 <!-- Products Table -->
@@ -430,15 +541,46 @@
                             <td class="pr-4 font-medium text-green-600 dark:text-green-400 transition-colors duration-300">Discount:</td>
                             <td class="text-right text-green-600 dark:text-green-400 transition-colors duration-300">-₹<span x-text="orderPreview.discount"></span></td>
                         </tr>
-                        <tr>
-                            <td class="pr-4 font-medium text-gray-900 dark:text-white transition-colors duration-300">GST (18%):</td>
-                            <td class="text-right text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="orderPreview.tax"></span></td>
+                        <tr x-show="orderPreview.customer && orderPreview.customer.state !== 'Tamil Nadu'">
+                            <td class="pr-4 font-medium text-gray-900 dark:text-white transition-colors duration-300">IGST (<span x-text="settings ? settings.tax_rate : 18"></span>%):</td>
+                            <td class="text-right text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="igstAmount.toFixed(2)"></span></td>
+                        </tr>
+                        <tr x-show="orderPreview.customer && orderPreview.customer.state === 'Tamil Nadu'">
+                            <td class="pr-4 font-medium text-gray-900 dark:text-white transition-colors duration-300">CGST (<span x-text="(settings ? settings.tax_rate : 18) / 2"></span>%):</td>
+                            <td class="text-right text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="cgstAmount.toFixed(2)"></span></td>
+                        </tr>
+                        <tr x-show="orderPreview.customer && orderPreview.customer.state === 'Tamil Nadu'">
+                            <td class="pr-4 font-medium text-gray-900 dark:text-white transition-colors duration-300">SGST (<span x-text="(settings ? settings.tax_rate : 18) / 2"></span>%):</td>
+                            <td class="text-right text-gray-900 dark:text-white transition-colors duration-300">₹<span x-text="sgstAmount.toFixed(2)"></span></td>
                         </tr>
                         <tr class="border-t border-gray-300 dark:border-gray-600 transition-colors duration-300">
                             <td class="pr-4 font-bold text-lg text-gray-900 dark:text-white transition-colors duration-300">Total:</td>
                             <td class="text-right font-bold text-lg text-blue-600 dark:text-blue-400 transition-colors duration-300">₹<span x-text="orderPreview.total"></span></td>
                         </tr>
                     </table>
+                </div>
+                
+                <!-- Bank Details -->
+                <div class="mt-6 text-sm" x-show="bankDetails">
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300"><strong>Bank Details:</strong></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="bankDetails ? 'Bank: ' + bankDetails.bank_name + (bankDetails.branch ? ', ' + bankDetails.branch : '') : ''"></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="bankDetails ? 'A/c No: ' + bankDetails.account_number : ''"></div>
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300" x-text="bankDetails ? 'IFSC: ' + bankDetails.ifsc_code : ''"></div>
+                </div>
+
+                <!-- Signature Section -->
+                <div class="mt-8 flex justify-end items-end">
+                    <div class="text-center">
+                        <div class="border-t-2 border-gray-400 w-32 h-16"></div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300 mt-1">Authorized Signature</div>
+                    </div>
+                </div>
+
+                <!-- Total in Words -->
+                <div class="mt-4 text-sm text-center">
+                    <div class="text-gray-900 dark:text-white transition-colors duration-300">
+                        <strong>Amount in Words:</strong> <span x-text="numberToWords(parseFloat(orderPreview.total))"></span>
+                    </div>
                 </div>
 
                 <!-- Footer -->
@@ -482,15 +624,23 @@
             nextOrderNumber: '',
             showModal: false,
             showCustomerModal: false,
+            showTransportModal: false,
             showDiscountModal: false,
             discountPercentage: 0,
             selectedCustomer: null,
+            selectedTransportId: null,
+            selectedTransport: null,
+            transports: [],
             settings: null,
+            bankDetails: null,
             customerForm: {
                 name: '',
                 phone: '',
                 email: '',
-                address: ''
+                address: '',
+                gst_number: '',
+                aadhar_number: '',
+                state: ''
             },
             orderPreview: {
                 number: '',
@@ -505,6 +655,8 @@
                 this.fetchNextOrderNumber();
                 this.loadCartFromStorage();
                 this.loadSettings();
+                this.loadTransports();
+                this.loadBankDetails();
             },
             
             fetchNextOrderNumber() {
@@ -525,6 +677,32 @@
                     })
                     .catch(err => {
                         console.error('Failed to load settings:', err);
+                    });
+            },
+            
+            loadTransports() {
+                fetch('/api/transports')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.transports) {
+                            this.transports = data.transports;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to load transports:', err);
+                    });
+            },
+            
+            loadBankDetails() {
+                fetch('/api/bank-details/default')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.bankDetails) {
+                            this.bankDetails = data.bankDetails;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to load bank details:', err);
                     });
             },
             
@@ -551,9 +729,50 @@
                 return (this.subtotal * this.discountPercentage) / 100;
             },
             
-            get taxAmount() {
+            get igstAmount() {
+                const taxableAmount = this.subtotal - this.discountAmount;
+                const customerState = this.selectedCustomer ? this.selectedCustomer.state : null;
+                
+                // If customer is from Tamil Nadu (same state), no IGST
+                if (customerState === 'Tamil Nadu') {
+                    return 0;
+                }
+                
+                // If customer is from different state, apply IGST
                 const taxRate = this.settings ? this.settings.tax_rate : 18;
-                return ((this.subtotal - this.discountAmount) * taxRate) / 100;
+                return (taxableAmount * taxRate) / 100;
+            },
+            
+            get cgstAmount() {
+                const taxableAmount = this.subtotal - this.discountAmount;
+                const customerState = this.selectedCustomer ? this.selectedCustomer.state : null;
+                
+                // If customer is from Tamil Nadu (same state), apply CGST
+                if (customerState === 'Tamil Nadu') {
+                    const taxRate = this.settings ? this.settings.tax_rate : 18;
+                    return (taxableAmount * (taxRate / 2)) / 100;
+                }
+                
+                // If customer is from different state, no CGST
+                return 0;
+            },
+            
+            get sgstAmount() {
+                const taxableAmount = this.subtotal - this.discountAmount;
+                const customerState = this.selectedCustomer ? this.selectedCustomer.state : null;
+                
+                // If customer is from Tamil Nadu (same state), apply SGST
+                if (customerState === 'Tamil Nadu') {
+                    const taxRate = this.settings ? this.settings.tax_rate : 18;
+                    return (taxableAmount * (taxRate / 2)) / 100;
+                }
+                
+                // If customer is from different state, no SGST
+                return 0;
+            },
+            
+            get taxAmount() {
+                return this.igstAmount + this.cgstAmount + this.sgstAmount;
             },
             
             get totalAmount() {
@@ -612,8 +831,16 @@
                 if (this.customerForm.name && this.customerForm.phone) {
                     this.selectedCustomer = { ...this.customerForm };
                     this.showCustomerModal = false;
-                    this.customerForm = { name: '', phone: '', email: '', address: '' };
+                    this.customerForm = { name: '', phone: '', email: '', address: '', gst_number: '', aadhar_number: '', state: '' };
                     this.showToastMessage('Customer information saved!');
+                }
+            },
+            
+            saveTransport() {
+                if (this.selectedTransportId) {
+                    this.selectedTransport = this.transports.find(t => t.id == this.selectedTransportId);
+                    this.showTransportModal = false;
+                    this.showToastMessage('Transport selected!');
                 }
             },
             
@@ -645,8 +872,12 @@
                         cart: this.cart,
                         total: this.totalAmount,
                         customer: this.selectedCustomer,
+                        transport: this.selectedTransport,
                         discount: this.discountAmount,
-                        tax: this.taxAmount
+                        tax: this.taxAmount,
+                        igst: this.igstAmount,
+                        cgst: this.cgstAmount,
+                        sgst: this.sgstAmount
                     })
                 })
                 .then(res => res.json())
@@ -658,11 +889,14 @@
                         discount: this.discountAmount.toFixed(2),
                         tax: this.taxAmount.toFixed(2),
                         total: this.totalAmount.toFixed(2),
-                        customer: this.selectedCustomer ? { ...this.selectedCustomer } : null
+                        customer: this.selectedCustomer ? { ...this.selectedCustomer } : null,
+                        transport: this.selectedTransport ? { ...this.selectedTransport } : null
                     };
                     this.showModal = true;
                     this.cart = [];
                     this.selectedCustomer = null;
+                    this.selectedTransport = null;
+                    this.selectedTransportId = null;
                     this.discountPercentage = 0;
                     this.saveCartToStorage();
                     this.fetchNextOrderNumber();
@@ -680,6 +914,24 @@
                 const customerAddress = this.orderPreview.customer ? this.orderPreview.customer.address : '';
                 const customerEmail = this.orderPreview.customer ? this.orderPreview.customer.email : '';
                 
+                // Calculate taxes for print
+                const taxableAmount = parseFloat(this.orderPreview.subtotal) - parseFloat(this.orderPreview.discount);
+                const customerState = this.orderPreview.customer ? this.orderPreview.customer.state : null;
+                const taxRate = this.settings ? this.settings.tax_rate : 18;
+                
+                let igstAmount = 0;
+                let cgstAmount = 0;
+                let sgstAmount = 0;
+                
+                if (customerState === 'Tamil Nadu') {
+                    // Same state - CGST + SGST
+                    cgstAmount = (taxableAmount * (taxRate / 2)) / 100;
+                    sgstAmount = (taxableAmount * (taxRate / 2)) / 100;
+                } else {
+                    // Different state - IGST
+                    igstAmount = (taxableAmount * taxRate) / 100;
+                }
+                
                 const printContent = `
                     <div class="text-sm font-sans bg-white p-6 border rounded-lg">
                         <!-- Company Header -->
@@ -688,8 +940,7 @@
                             <div class="text-2xl font-bold text-gray-900 mb-1">${this.settings ? this.settings.company_name : 'Company Name'}</div>
                             <div class="text-sm text-gray-600">${this.settings ? this.settings.company_address : '302/3B NARANAPURAM PUDHUR, SIVAKASI 626189'}</div>
                             <div class="text-sm text-gray-600">
-                                <span>Phone: ${this.settings ? this.settings.company_phone : '+91 8248384330'}</span>
-                                ${this.settings && this.settings.company_email ? ` | <span>Email: ${this.settings.company_email}</span>` : ''}
+                                <span>Exp Lic No :01/2021</span>
                             </div>
                             ${this.settings && this.settings.gst_number ? `<div class="text-sm text-gray-600">GST: ${this.settings.gst_number}</div>` : ''}
                         </div>
@@ -702,6 +953,9 @@
                                 ${customerPhone ? `<div class="text-gray-900">${customerPhone}</div>` : ''}
                                 ${customerAddress ? `<div class="text-gray-900">${customerAddress}</div>` : ''}
                                 ${customerEmail ? `<div class="text-gray-900">${customerEmail}</div>` : ''}
+                                ${this.orderPreview.customer && this.orderPreview.customer.gst_number ? `<div class="text-gray-900">GST: ${this.orderPreview.customer.gst_number}</div>` : ''}
+                                ${this.orderPreview.customer && this.orderPreview.customer.aadhar_number ? `<div class="text-gray-900">Aadhar: ${this.orderPreview.customer.aadhar_number}</div>` : ''}
+                                ${this.orderPreview.customer && this.orderPreview.customer.state ? `<div class="text-gray-900">State: ${this.orderPreview.customer.state}</div>` : ''}
                             </div>
                             <div class="text-right">
                                 <div class="text-gray-900"><strong>Bill No:</strong> ${this.orderPreview.number}</div>
@@ -709,6 +963,17 @@
                                 <div class="text-gray-900"><strong>Time:</strong> ${new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}</div>
                             </div>
                         </div>
+
+                        <!-- Transport Details -->
+                        ${this.orderPreview.transport ? `
+                        <div class="mb-4 text-sm">
+                            <div class="text-gray-900"><strong>Transport:</strong></div>
+                            <div class="text-gray-900">${this.orderPreview.transport.name || 'No name'}</div>
+                            ${this.orderPreview.transport.phone ? `<div class="text-gray-900">${this.orderPreview.transport.phone}</div>` : ''}
+                            ${this.orderPreview.transport.vehicle_number ? `<div class="text-gray-900">Vehicle: ${this.orderPreview.transport.vehicle_number}</div>` : ''}
+                            ${this.orderPreview.transport.address ? `<div class="text-gray-900">${this.orderPreview.transport.address}</div>` : ''}
+                        </div>
+                        ` : ''}
 
                         <!-- Products Table -->
                         <table class="w-full mb-4 border-collapse border border-gray-300 text-sm">
@@ -747,15 +1012,52 @@
                                         <td class="text-right text-green-600">-₹${parseFloat(this.orderPreview.discount).toFixed(2)}</td>
                                     </tr>
                                 ` : ''}
+                                ${customerState !== 'Tamil Nadu' ? `
                                 <tr>
-                                    <td class="pr-4 font-medium">GST (18%):</td>
-                                    <td class="text-right">₹${parseFloat(this.orderPreview.tax).toFixed(2)}</td>
+                                    <td class="pr-4 font-medium">IGST (${taxRate}%):</td>
+                                    <td class="text-right">₹${igstAmount.toFixed(2)}</td>
                                 </tr>
+                                ` : ''}
+                                ${customerState === 'Tamil Nadu' ? `
+                                <tr>
+                                    <td class="pr-4 font-medium">CGST (${taxRate / 2}%):</td>
+                                    <td class="text-right">₹${cgstAmount.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td class="pr-4 font-medium">SGST (${taxRate / 2}%):</td>
+                                    <td class="text-right">₹${sgstAmount.toFixed(2)}</td>
+                                </tr>
+                                ` : ''}
                                 <tr class="border-t">
                                     <td class="pr-4 font-bold text-lg">Total:</td>
                                     <td class="text-right font-bold text-lg text-blue-600">₹${parseFloat(this.orderPreview.total).toFixed(2)}</td>
                                 </tr>
                             </table>
+                        </div>
+                        
+                        <!-- Bank Details -->
+                        ${this.bankDetails ? `
+                        <div class="mt-6 text-sm">
+                            <div class="text-gray-900"><strong>Bank Details:</strong></div>
+                            <div class="text-gray-900">Bank: ${this.bankDetails.bank_name}${this.bankDetails.branch ? ', ' + this.bankDetails.branch : ''}</div>
+                            <div class="text-gray-900">A/c No: ${this.bankDetails.account_number}</div>
+                            <div class="text-gray-900">IFSC: ${this.bankDetails.ifsc_code}</div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Signature Section -->
+                        <div class="mt-8 flex justify-end items-end">
+                            <div class="text-center">
+                                <div class="border-t-2 border-gray-400 w-32 h-16"></div>
+                                <div class="text-xs text-gray-600 mt-1">Authorized Signature</div>
+                            </div>
+                        </div>
+
+                        <!-- Total in Words -->
+                        <div class="mt-4 text-sm text-center">
+                            <div class="text-gray-900">
+                                <strong>Amount in Words:</strong> ${this.numberToWords(parseFloat(this.orderPreview.total))}
+                            </div>
                         </div>
 
                         <!-- Footer -->
@@ -863,6 +1165,30 @@
                                 .italic {
                                     font-style: italic;
                                 }
+                                .flex {
+                                    display: flex;
+                                }
+                                .justify-end {
+                                    justify-content: flex-end;
+                                }
+                                .items-end {
+                                    align-items: flex-end;
+                                }
+                                .mt-8 {
+                                    margin-top: 32px;
+                                }
+                                .w-32 {
+                                    width: 128px;
+                                }
+                                .h-16 {
+                                    height: 64px;
+                                }
+                                .border-t-2 {
+                                    border-top: 2px solid #9ca3af;
+                                }
+                                .border-gray-400 {
+                                    border-color: #9ca3af;
+                                }
                                 hr {
                                     margin: 8px 0;
                                     border: none;
@@ -901,6 +1227,61 @@
                 if (savedCart) {
                     this.cart = JSON.parse(savedCart);
                 }
+            },
+            
+            numberToWords(num) {
+                const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+                const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+                const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+                
+                function convertLessThanOneThousand(n) {
+                    if (n === 0) return '';
+                    
+                    if (n < 10) return ones[n];
+                    if (n < 20) return teens[n - 10];
+                    if (n < 100) {
+                        return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+                    }
+                    if (n < 1000) {
+                        return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convertLessThanOneThousand(n % 100) : '');
+                    }
+                }
+                
+                function convert(n) {
+                    if (n === 0) return 'Zero';
+                    
+                    const crore = Math.floor(n / 10000000);
+                    const lakh = Math.floor((n % 10000000) / 100000);
+                    const thousand = Math.floor((n % 100000) / 1000);
+                    const remainder = n % 1000;
+                    
+                    let result = '';
+                    
+                    if (crore > 0) {
+                        result += convertLessThanOneThousand(crore) + ' Crore ';
+                    }
+                    if (lakh > 0) {
+                        result += convertLessThanOneThousand(lakh) + ' Lakh ';
+                    }
+                    if (thousand > 0) {
+                        result += convertLessThanOneThousand(thousand) + ' Thousand ';
+                    }
+                    if (remainder > 0) {
+                        result += convertLessThanOneThousand(remainder);
+                    }
+                    
+                    return result.trim();
+                }
+                
+                const rupees = Math.floor(num);
+                const paise = Math.round((num - rupees) * 100);
+                
+                let result = convert(rupees) + ' Rupees';
+                if (paise > 0) {
+                    result += ' and ' + convert(paise) + ' Paise';
+                }
+                
+                return result + ' Only';
             }
         }
     }

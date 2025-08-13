@@ -6,6 +6,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductContoller;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TransportController;
+use App\Http\Controllers\BankDetailController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     // Products
     Route::post('/add-product', [ProductContoller::class, 'addProduct'])->name('add.product');
     Route::get('/all-products', [ProductContoller::class, 'allProducts'])->name('all.products');
+    Route::delete('/delete-product/{id}', [ProductContoller::class, 'deleteProduct'])->name('delete.product');
     
     // Orders
     Route::post('/store-order', [OrderController::class, 'store'])->name('store.order');
@@ -56,5 +59,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/settings/update', [SettingsController::class, 'updateGeneralSettings'])->name('settings.update');
     Route::get('/api/settings', [SettingsController::class, 'getSettings'])->name('settings.get');
     Route::delete('/api/settings/delete-logo', [SettingsController::class, 'deleteLogo'])->name('settings.delete-logo');
+
+    // Transports
+    Route::resource('transports', TransportController::class);
+    Route::get('/api/transports', [TransportController::class, 'getAllTransports'])->name('transports.api');
+
+    // Bank Details
+    Route::resource('bank-details', BankDetailController::class);
+    Route::get('/api/bank-details', [BankDetailController::class, 'getAllBankDetails'])->name('bank-details.api');
+    Route::get('/api/bank-details/default', [BankDetailController::class, 'getDefaultBankDetails'])->name('bank-details.default');
 });
 
