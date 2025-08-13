@@ -957,7 +957,7 @@
                                 ${this.orderPreview.customer && this.orderPreview.customer.aadhar_number ? `<div class="text-gray-900">Aadhar: ${this.orderPreview.customer.aadhar_number}</div>` : ''}
                                 ${this.orderPreview.customer && this.orderPreview.customer.state ? `<div class="text-gray-900">State: ${this.orderPreview.customer.state}</div>` : ''}
                             </div>
-                            <div class="text-right">
+                            <div style="text-align: right;">
                                 <div class="text-gray-900"><strong>Bill No:</strong> ${this.orderPreview.number}</div>
                                 <div class="text-gray-900"><strong>Date:</strong> ${new Date().toLocaleDateString('en-IN')}</div>
                                 <div class="text-gray-900"><strong>Time:</strong> ${new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}</div>
@@ -1168,8 +1168,14 @@
                                 .flex {
                                     display: flex;
                                 }
+                                .justify-between {
+                                    justify-content: space-between;
+                                }
                                 .justify-end {
                                     justify-content: flex-end;
+                                }
+                                .items-start {
+                                    align-items: flex-start;
                                 }
                                 .items-end {
                                     align-items: flex-end;
